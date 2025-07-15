@@ -13,6 +13,32 @@ import plotly.graph_objects as go
 from sklearn.feature_extraction.text import CountVectorizer
 import matplotlib.font_manager as fm
 import streamlit.components.v1 as components
+import os
+
+
+# 폰트 경로를 찾는 함수
+def get_font_path():
+    # 프로젝트 내 폰트 경로 먼저 확인
+    project_font_path = os.path.join(os.path.dirname(__file__), 'fonts', 'NotoSansKR.ttf')
+    if os.path.exists(project_font_path):
+        return project_font_path
+    
+    # 시스템 폰트 경로들 확인
+    font_paths = [
+        "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
+        "/usr/share/fonts/truetype/nanum/NanumBarunGothic.ttf",
+        "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/truetype/noto/NotoSansKR-Regular.ttf",
+        "/System/Library/Fonts/Helvetica.ttc",  # macOS
+        "C:/Windows/Fonts/malgun.ttf",  # Windows
+    ]
+    
+    for path in font_paths:
+        if os.path.exists(path):
+            return path
+    
+    # 한글 폰트를 찾지 못한 경우 None 반환 (기본 폰트 사용)
+    return None
 
 
 # 한글 폰트 설정
@@ -660,15 +686,40 @@ def multicolor_func(*args, **kwargs):
 # ✅ 함수 정의
 def render_wordcloud(title: str, keyword_freq: dict, problem_example_sentences: list):
     # 워드클라우드 객체 생성
-    wc = WordCloud(
-        font_path="/usr/share/fonts/truetype/nanum/NanumGothic.ttf",  # 폰트 경로 시스템에 따라 조정
-        background_color="white",  # 배경색
-        width=400,
-        color_func=multicolor_func,
-        height=300,
-        max_font_size=40,
-        min_font_size=10
-    ).generate_from_frequencies(keyword_freq)
+    font_path = get_font_path()
+    
+    try:
+        if font_path:
+            wc = WordCloud(
+                font_path=font_path,
+                background_color="white",
+                width=400,
+                color_func=multicolor_func,
+                height=300,
+                max_font_size=40,
+                min_font_size=10
+            ).generate_from_frequencies(keyword_freq)
+        else:
+            # 폰트 경로 없이 기본 설정으로 생성
+            wc = WordCloud(
+                background_color="white",
+                width=400,
+                color_func=multicolor_func,
+                height=300,
+                max_font_size=40,
+                min_font_size=10
+            ).generate_from_frequencies(keyword_freq)
+    except Exception as e:
+        # 폰트 로드 실패 시 기본 설정으로 재시도
+        st.warning(f"폰트 로드 중 오류 발생: {str(e)[:100]}... 기본 폰트를 사용합니다.")
+        wc = WordCloud(
+            background_color="white",
+            width=400,
+            color_func=multicolor_func,
+            height=300,
+            max_font_size=40,
+            min_font_size=10
+        ).generate_from_frequencies(keyword_freq)
 
     # 워드클라우드 시각화
     fig, ax = plt.subplots(figsize=(4, 3))
