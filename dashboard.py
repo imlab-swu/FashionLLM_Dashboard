@@ -1,5 +1,9 @@
 import streamlit as st
-st.set_page_config(layout="wide", page_title="크라우드펀딩 패션 스토리텔링 대시보드")
+st.set_page_config(
+    layout="wide",
+    page_title="크라우드펀딩 패션 스토리텔링 대시보드",
+    page_icon="👗"
+)
 
 import pandas as pd
 import numpy as np
