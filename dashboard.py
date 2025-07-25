@@ -306,48 +306,48 @@ def render_hover_box(title, keywords_dict):
 
 st.markdown("---")
 
-# 감성 vs 기능 도넛 차트 레이아웃 (plotly + 오른쪽 탭)
-def render_emotion_function_donut_chart():
-    st.markdown("## 전체 키워드 분석(미팅 후 수정 예정)")
+# # 감성 vs 기능 도넛 차트 레이아웃 (plotly + 오른쪽 탭)
+# def render_emotion_function_donut_chart():
+#     st.markdown("## 전체 키워드 분석(미팅 후 수정 예정)")
 
-    left, right = st.columns([1.1, 1.9])
+#     left, right = st.columns([1.1, 1.9])
 
-    with left:
-        pastel_colors = ["#FFB3C6", "#B3D9FF"]
+#     with left:
+#         pastel_colors = ["#FFB3C6", "#B3D9FF"]
 
-        fig = px.pie(
-            names=labels,
-            values=sizes,
-            hole=0.4,
-            color_discrete_sequence=pastel_colors
-        )
-        fig.update_layout(
-            margin=dict(l=10, r=10, t=10, b=10),
-            height=300,
-            paper_bgcolor="white",
-            plot_bgcolor="white",
-            font_color="black",
-            legend=dict(font=dict(color="black"))
-        )
-        fig.update_traces(
-            textinfo='percent',
-            textfont_size=14,
-            textfont_color='black'
-        )
-        st.plotly_chart(fig, use_container_width=True)
+#         fig = px.pie(
+#             names=labels,
+#             values=sizes,
+#             hole=0.4,
+#             color_discrete_sequence=pastel_colors
+#         )
+#         fig.update_layout(
+#             margin=dict(l=10, r=10, t=10, b=10),
+#             height=300,
+#             paper_bgcolor="white",
+#             plot_bgcolor="white",
+#             font_color="black",
+#             legend=dict(font=dict(color="black"))
+#         )
+#         fig.update_traces(
+#             textinfo='percent',
+#             textfont_size=14,
+#             textfont_color='black'
+#         )
+#         st.plotly_chart(fig, use_container_width=True)
 
-    with right:
-        tabs = st.tabs(["기능적 키워드", "감성적 키워드"])
-        with tabs[0]:
-            render_hover_box("기능적 키워드", functional_keywords)
-        with tabs[1]:
-            render_hover_box("감성적 키워드", emotional_keywords)
+#     with right:
+#         tabs = st.tabs(["기능적 키워드", "감성적 키워드"])
+#         with tabs[0]:
+#             render_hover_box("기능적 키워드", functional_keywords)
+#         with tabs[1]:
+#             render_hover_box("감성적 키워드", emotional_keywords)
 
-render_emotion_function_donut_chart()
+# render_emotion_function_donut_chart()
 
 
 
-st.markdown("---")
+# st.markdown("---")
 st.markdown("## 핵심 요소별 주요 키워드 & 예시 문장")
 
 problem_keywords = {
@@ -374,65 +374,74 @@ problem_keywords = {
 
 element_example_sentences = {
     # 파이차트용 요소 (세부 분류 O)
-    "브랜드 소개": {
-        "브랜드 가치관": [
+    "Brand": {
+        "Brand identity": [
             "우리는 옷을 통해 삶의 가치를 높인다는 철학을 가지고 있습니다.",
             "모두가 입을 수 있고 소중한 삶의 보탬이 되어줄 제품을 만드는 것이 유니핏의 신념이자 추구하는 방향입니다."
         ],
-        "창작자의 스토리": [
+        "Creator profile/history": [
             "학창시절부터 패션을 사랑해온 디자이너의 열정이 담겼습니다.",
             "직접 겪은 실패와 회복의 경험이 이 프로젝트의 출발점이었습니다."
         ],
-        "실패 극복": [
+        "Project goal": [
+            "초기 제작 실패를 딛고 수차례 개선을 거쳐 완성했습니다.",
+            "고객 피드백을 반영하여 핏과 소재를 전면 수정했습니다."
+        ],
+        "Funding usage": [
             "초기 제작 실패를 딛고 수차례 개선을 거쳐 완성했습니다.",
             "고객 피드백을 반영하여 핏과 소재를 전면 수정했습니다."
         ]
     },
 
-    "제품 및 브랜드 외부 평가": {
-        "사용자 후기": [
+    "External evaluation": {
+        "Third-party evaluations": [
             "1,500개 이상의 구매 후기에서 4.9점의 평점을 기록했습니다.",
             "후기 대부분이 '핏이 좋다', '재질이 고급스럽다'는 반응입니다."
         ],
-        "기관 인증": [
+        "Certificate": [
             "KC 인증과 함께 OEKO-TEX 친환경 인증을 획득했습니다.",
             "안심하고 착용하실 수 있도록 국가 품질 인증을 완료했습니다.",
             "철저한 안전관리 및 프로세스 검침은 기본! 거기에 더해, 기본적으로행복한 직원이 훌륭한 제품을 만든다고 생각하기 때문에 받은WRAP 인증까지!"
         ],
-        "수상 경력": [
+        "Award": [
             "국제 섬유 디자인 대회인 IFDA 2022에서 본 제품의 원단 배색과 패턴 디자인이 심사위원 만장일치로 우수상을 수상했습니다.",
             "소비자가 뽑은 브랜드 대상 2년 연속 수상'은 저희 제품을 직접 경험하신 수많은 고객분들의 평가 덕분이었습니다.",
             "저희 브랜드는 2023 K패션 어워즈에서 '올해의 혁신 디자인' 부문을 수상하며 제품력과 디자인 모두를 인정받았습니다."
         ]
     },
 
-    "펀딩 참여 유도": {
-        "한정 수량": [
+    "Request to funders": {
+        "Discounts": [
             "얼리버드 한정 수량으로 20% 할인 혜택을 드립니다.",
             "재고 소진 시 추가 구매가 불가합니다."
         ],
-        "얼리버드": [
+        "Early bird benefits": [
             "펀딩 초반 참여자에게만 제공되는 스페셜 리워드입니다.",
             "48시간 이내 얼리버드 참여자에겐 특별 패키지를 드립니다."
         ],
-        "스페셜 리워드": [
+        "Special offers": [
             "목표 금액 달성 시 추가 리워드를 드립니다.",
             "펀딩 참여자 전용 한정판 굿즈를 제공합니다."
         ]
     },
 
-    "자주 묻는 질문": {
-        "배송일정": [
+    "FAQ": {
+        "Shipping/return/exchange": [
             "리워드 수령으로부터 14일 이내에 발생한 초기 하자에 대해서는 본 A/S정책이 적용되지 않습니다.",
             "세탁, 사용, 택 제거, 오염, 수선 등 이후 발생한 문제는 유상수리 및 왕복 택배비는 서포터님 부담으로 진행되며, 경우에 따라 (유상 수리가 불가할 정도로 심각한 훼손의 경우) 수리가 불가할 수 있습니다.",
             "단순 변심에 의한 환불 및 교환은 불가합니다.(해당 상품은 네팔에서 직접 만들어서 오는 펀딩 상품으로 반품이나 교환이 쉽지 않습니다. 상품 자체의 문제일 경우 환불이 가능하지만, 그렇지 않은 경우 환불 및 교환이 불가함을 미리 공지드립니다."
         ],
-        "세탁방법": [
+        "Washing/care": [
             "Q. 세탁 방법은 어떻게 되나요? 상세 페이지 하단에 상세한 세탁 방법을 안내드립니다. 드라이클리닝을 권장하며, 손세탁일 경우, 미온수와 중성세제를 사용하여 가볍게 세탁하시고 그늘진 곳에서 자연건조 하시기 바랍니다.",
             "Q. 세탁시 주의사항이 있을까요? A. 세탁기에 30도 이하로 세탁하시면 됩니다. 면은 뜨거운 열을 가하면 줄어드는 게 필연이라, 건조기에는 절대 돌리지 마세요~ 축률을 최소화한 공정을 거쳤기 때문에 찬물로 빠시면 3% 이내로 축률을 막을 수 있습니다. 세탁기에서 꺼내신 후 널어서 말리시는 게 제일 좋습니다.",
             "Q. 세탁은 어떻게 하나요?A. 세탁은 드라이 크리닝 하시길 권장합니다."
         ],
-        "교환/반품": [
+        "Customer concerns": [
+            "펀딩 마감 이후, 불가피한 사유로 배송지 변경이 필요하시다면 해당 페이지 내 '메이커에게 문의하기'를 통해 문의 부탁드립니다.",
+            "배송은 언제 시작되나요? A. 결제는 펀딩 기간이 종료 된 후 다음날부터 4일 동안 진행이 됩니다.",
+            "펀딩 기간 종료와 동시에 배송이 시작됩니다. 일반 배송은 4일동안 진행되며, 제주/도서산간 지역 배송은 최대 7일이 걸릴 수 있습니다."
+        ],
+        "Product usage": [
             "펀딩 마감 이후, 불가피한 사유로 배송지 변경이 필요하시다면 해당 페이지 내 '메이커에게 문의하기'를 통해 문의 부탁드립니다.",
             "배송은 언제 시작되나요? A. 결제는 펀딩 기간이 종료 된 후 다음날부터 4일 동안 진행이 됩니다.",
             "펀딩 기간 종료와 동시에 배송이 시작됩니다. 일반 배송은 4일동안 진행되며, 제주/도서산간 지역 배송은 최대 7일이 걸릴 수 있습니다."
@@ -440,7 +449,7 @@ element_example_sentences = {
     },
 
     # 워드클라우드용 요소 (단일 리스트)
-    "문제 제기 및 솔루션 제시": [
+    "Problem/need": [
         # "캐시미어는 정말 좋은 소재지만 좋은 소재에 가려져 원단만 강조되고 알게 모르게 옷이라면 지녀야 할 편안함, 디자인성들이 뒷전으로 가있는 소재이기도 합니다.",
         # "기존의 점퍼 공식인, 30데니아 - 3레이어로도 샘플 테스트를 해봤는데, 역시 예상대로 리버서블에겐 너무 두껍고, 거슬리고, 움직임마저 편하지 않았어요.",
         "여름 티셔츠는 비침이 심하거나 땀이 배어 불편합니다. 특수 가공 원단으로 땀 배임 없이 쾌적함을 유지합니다.",
@@ -448,13 +457,13 @@ element_example_sentences = {
         "매번 어울리는 옷 찾기가 어려워 스트레스를 받습니다. 베이직하면서도 고급스러운 핏으로 어떤 상황에서도 활용도 높습니다.",
     ],
 
-    "제품 상세 설명": [
+    "Product detail": [
         "핏은 레귤러 핏으로, 슬림하지도 벙벙하지도 않아 누구에게나 잘 어울립니다.",
         "소재는 100% 코튼이며, 피부에 자극 없이 부드럽게 닿습니다.",
         "컬러는 블랙, 아이보리, 그레이 등 데일리로 활용하기 좋습니다."
     ],
 
-    "제품 전달 가치": [
+    "Product value": [
         "기능적(F): 복잡한세상편하게살자! 바쁘고 바쁜 우리네 삶 실용성, 효율성 없으면 말짱 꽝이죠. [단정함]을 필요로 할 때 입을 수 있도록 휴대하기 쉽게! 가방 한켠에 쏘옥-, 주머니에 쏘옥- 정신없고답 없는 상황에서해답은 셔츠토시 뿐!",
         "표현적(E): 도시적인 세련미를 표현할 수 있습니다.",
         "심미적(A): 트렌드에 얽메이지 않는 유니크한 디자인 꽈배기, 와플, 베이직 니트 등등 베이직 디자인으로 식상했다면 유니크의 차별화된 디자인으로 매년 유니크하게 연출할 수 있습니다."
@@ -463,13 +472,13 @@ element_example_sentences = {
 
 
 element_analysis_info = [
-    {"name": "브랜드 소개", "method": "세부 카테고리 요소 추출", "examples": ["브랜드 가치관", "창작자의 스토리", "실패 극복"], "chart_type": "pie"},
-    {"name": "문제 제기 및 솔루션 제시", "method": "키워드 빈도 분석", "examples": problem_keywords, "chart_type": "wordcloud"},
-    {"name": "제품 상세 설명", "method": "TTA 기반 키워드 분석", "examples": ["소재: 면", "핏: 루즈", "컬러: 블랙"], "chart_type": "treemap"},
-    {"name": "제품 전달 가치", "method": "FEA 기반 추출", "examples": ["Functional: 편안함", "Expressive: 감각적", "Aesthetic: 디자인"], "chart_type": "radar"},
-    {"name": "제품 및 브랜드 외부 평가", "method": "세부 요소 추출", "examples": ["사용자 후기", "기관 인증", "수상 경력"], "chart_type": "pie"},
-    {"name": "펀딩 참여 유도", "method": "세부 요소 추출", "examples": ["한정 수량", "얼리버드", "스페셜 리워드"], "chart_type": "pie"},
-    {"name": "자주 묻는 질문", "method": "세부 요소 추출", "examples": ["배송일정", "세탁방법", "교환/반품"], "chart_type": "pie"}
+    {"name": "Brand", "method": "세부 카테고리 요소 추출", "examples": ["Brand identity", "Creator profile/history", "Project goal", "Funding usage"], "chart_type": "pie"},
+    {"name": "Problem/need", "method": "키워드 빈도 분석", "examples": problem_keywords, "chart_type": "wordcloud"},
+    {"name": "Product detail", "method": "TTA 기반 키워드 분석", "examples": ["소재: 면", "핏: 루즈", "컬러: 블랙"], "chart_type": "treemap"},
+    {"name": "Product value", "method": "FEA 기반 추출", "examples": ["Functional: practical", "Expressive: emotional", "Aesthetic: aesthetic"], "chart_type": "radar"},
+    {"name": "External evaluation", "method": "세부 요소 추출", "examples": ["Third-party evaluations", "Certificate", "Award"], "chart_type": "pie"},
+    {"name": "Request to funders", "method": "세부 요소 추출", "examples": ["Discounts", "Early bird benefits", "Special offers"], "chart_type": "pie"},
+    {"name": "FAQ", "method": "세부 요소 추출", "examples": ["Shipping/return/exchange", "Washing/care", "Customer concerns", "Product usage"], "chart_type": "pie"}
 ]
 
 def render_pie_chart(title, labels):
@@ -637,7 +646,7 @@ def display_success_cases(keyword, thumbnail_data):
 
 def render_treemap():
     st.markdown("""
-    <h3 style='margin-bottom: -5px;'>제품 상세 설명</h3>
+    <h3 style='margin-bottom: -5px;'>Product detail</h3>
     <style>
     /* plotly 차트를 포함하는 div의 상단 마진 제거 */
     .element-container:has(.js-plotly-plot) {
@@ -870,66 +879,173 @@ def render_treemap():
             """, unsafe_allow_html=True)
 
 
+# def render_radar_chart():
+#     st.markdown("### 제품 전달 가치")
+
+#     col1, col2 = st.columns([1.2, 1.8])
+
+#     with col1:
+#         categories = ['Functional', 'Expressive', 'Aesthetic']
+#         values = [35, 45, 25]  # 예시 점수
+
+#         fig = go.Figure()
+#         fig.add_trace(go.Scatterpolar(
+#             r=values + [values[0]],
+#             theta=categories + [categories[0]],
+#             fill='toself',
+#             line=dict(color='rgba(255, 99, 132, 1)', width=3),
+#             fillcolor='rgba(255, 99, 132, 0.3)',
+#             marker=dict(size=8)
+#         ))
+
+#         fig.update_layout(
+#             polar=dict(
+#                 bgcolor="white",
+#                 radialaxis=dict(
+#                     visible=True,
+#                     range=[0, 50]
+#                 ),
+#                 angularaxis=dict(
+#                     tickfont=dict(size=13),  # 글씨 작게 해서 잘림 방지
+#                     rotation=90,             # 시작 위치 변경 (옵션)
+#                     direction="clockwise"
+#                 )
+#             ),
+#             showlegend=False,
+#             height=420,
+#             width=420,
+#             margin=dict(l=40, r=40, t=40, b=40)
+#         )
+
+#         st.plotly_chart(fig, use_container_width=False)
+
+#     with col2:
+#         # st.markdown("### 💬 예시 문장")
+#         st.markdown(
+#         "<h4 style='text-align: center; font-weight: bold;'>문장 예시</h4>",
+#         unsafe_allow_html=True)
+
+#         with st.expander("Functional", expanded=False):
+#             st.markdown("- 복잡한 세상 편하게 살자! ... 셔츠토시 뿐!")
+#             st.markdown("- 몸에 닿았을 때의 편안함과 부드러움을 ... 신경쓰이는 곳이 없어야 하기 때문이에요.")
+#             st.markdown("- 다리 밑단이 말려 올라가는 문제를 해결하기 위해 ... 선을 이동했습니다.")
+
+#         with st.expander("Expressive", expanded=False):
+#             st.markdown("- 뽐내며 모든 이들에게 영향력을 주고 ... 영감을 받는다.")
+#             st.markdown("- KEEP IT REAL 너답게 해! 있는 그대로의 너도 괜찮아.")
+#             st.markdown("- 내 감정을 마음껏~ 표현할 수 있어요 ... 나를 더 잘 알게 될 거예요.")
+
+#         with st.expander("Aesthetic", expanded=False):
+#             st.markdown("- 트렌디한 와이드 카라 XXHIT 셔츠토시 ... 스타일링하기 좋습니다.")
+#             st.markdown("- 트렌드에 얽메이지 않는 유니크한 디자인 ... 유니크하게 연출할 수 있습니다.")
+#             st.markdown("- 티셔츠 자체의 핏을 흐리지 않는 얇지않고 ... 결국 그러한 원단을 찾았습니다.")
+
+# FEA 하위 속성과 예시 문장 사전
+fea_data = {
+    "Functional": {
+        "Fit": "핏이 잘 맞아서 활동하기 편했어요.",
+        "Material": "고급 원단을 사용해서 착용감이 좋습니다.",
+        "Comfort": "몸에 닿는 촉감이 부드럽고 편안합니다.",
+        "Utility": "소매가 길이 조절이 되어 실용적입니다.",
+        "Durability": "여러 번 세탁해도 형태가 유지돼요."
+    },
+    "Expressive": {
+        "Brand Identity": "이 브랜드는 언제나 나의 스타일을 대변해요.",
+        "Symbolism": "해당 로고는 저에게 의미가 있어요.",
+        "Cultural Code": "요즘 트렌드와 잘 맞는 감성이네요.",
+        "Social Message": "이 옷은 사회적 메시지를 담고 있어서 좋아요."
+    },
+    "Aesthetic": {
+        "Color": "톤다운된 그린 컬러가 마음에 들어요.",
+        "Style": "캐주얼한 스타일이라 자주 입을 수 있어요.",
+        "Silhouette": "핏이 전체적으로 예쁘게 떨어져요.",
+        "Details": "소매 단추 디테일이 고급스러워요.",
+        "Trends": "지금 유행하는 스타일이라서 선택했어요."
+    }
+}
+
 def render_radar_chart():
-    st.markdown("### 제품 전달 가치")
+    st.markdown("### Product value")
 
-    col1, col2 = st.columns([1.2, 1.8])
+    # 썸네일 데이터 로
+    # thumbnail_data = load_thumbnail_data()
 
-    with col1:
-        categories = ['Functional', 'Expressive', 'Aesthetic']
-        values = [35, 45, 25]  # 예시 점수
+    col_f, col_e, col_a = st.columns(3)
 
-        fig = go.Figure()
-        fig.add_trace(go.Scatterpolar(
-            r=values + [values[0]],
-            theta=categories + [categories[0]],
-            fill='toself',
-            line=dict(color='rgba(255, 99, 132, 1)', width=3),
-            fillcolor='rgba(255, 99, 132, 0.3)',
-            marker=dict(size=8)
-        ))
+    with col_f:
+        st.markdown("#### Functional")
+        for attr, ex in fea_data["Functional"].items():
+            if st.button(attr, key=f"f_{attr}"):
+                st.info(f"예시: {ex}")
 
-        fig.update_layout(
-            polar=dict(
-                bgcolor="white",
-                radialaxis=dict(
-                    visible=True,
-                    range=[0, 50]
-                ),
-                angularaxis=dict(
-                    tickfont=dict(size=13),  # 글씨 작게 해서 잘림 방지
-                    rotation=90,             # 시작 위치 변경 (옵션)
-                    direction="clockwise"
-                )
-            ),
-            showlegend=False,
-            height=420,
-            width=420,
-            margin=dict(l=40, r=40, t=40, b=40)
-        )
+    with col_e:
+        st.markdown("#### Expressive")
+        for attr, ex in fea_data["Expressive"].items():
+            if st.button(attr, key=f"e_{attr}"):
+                st.info(f"예시: {ex}")
 
-        st.plotly_chart(fig, use_container_width=False)
+    with col_a:
+        st.markdown("#### Aesthetic")
+        for attr, ex in fea_data["Aesthetic"].items():
+            if st.button(attr, key=f"a_{attr}"):
+                st.info(f"예시: {ex}")
 
-    with col2:
-        # st.markdown("### 💬 예시 문장")
-        st.markdown(
-        "<h4 style='text-align: center; font-weight: bold;'>문장 예시</h4>",
-        unsafe_allow_html=True)
+    # with col_4:
+    #     if 'selected_keyword' in st.session_state and st.session_state.selected_keyword:
+    #         st.markdown(f"### 🎯 '{st.session_state.selected_keyword}' 관련 성공 사례")
 
-        with st.expander("Functional", expanded=False):
-            st.markdown("- 복잡한 세상 편하게 살자! ... 셔츠토시 뿐!")
-            st.markdown("- 몸에 닿았을 때의 편안함과 부드러움을 ... 신경쓰이는 곳이 없어야 하기 때문이에요.")
-            st.markdown("- 다리 밑단이 말려 올라가는 문제를 해결하기 위해 ... 선을 이동했습니다.")
+    #         for case in thumbnail_data[:3]:
+    #             st.markdown(f"""
+    #                 <div style="
+    #                     background-color: white;
+    #                     border: 1px solid #ddd;
+    #                     border-radius: 12px;
+    #                     padding: 15px;
+    #                     margin-bottom: 15px;
+    #                     display: flex;
+    #                     align-items: center;
+    #                     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    #                 ">
+    #                     <img src="{case['project_thumbnail_url']}" width="100" style="border-radius: 8px; margin-right: 15px;">
+    #                     <div style="flex: 1;">
+    #                         <p style="margin: 0; font-size: 14px;"><strong>🎯 성공률:</strong> {case['approach']}</p>
+    #                         <p style="margin: 4px 0 10px 0; font-size: 15px;">📝 {case['project_name']}</p>
+    #                         <a href="{case['url']}" target="_blank" style="
+    #                             background-color: #4099ff;
+    #                             color: white;
+    #                             padding: 6px 12px;
+    #                             border-radius: 6px;
+    #                             text-decoration: none;
+    #                             font-size: 14px;
+    #                         ">캠페인 보기</a>
+    #                     </div>
+    #                 </div>
+    #             """, unsafe_allow_html=True)
 
-        with st.expander("Expressive", expanded=False):
-            st.markdown("- 뽐내며 모든 이들에게 영향력을 주고 ... 영감을 받는다.")
-            st.markdown("- KEEP IT REAL 너답게 해! 있는 그대로의 너도 괜찮아.")
-            st.markdown("- 내 감정을 마음껏~ 표현할 수 있어요 ... 나를 더 잘 알게 될 거예요.")
+    #         st.markdown("</div>", unsafe_allow_html=True)
 
-        with st.expander("Aesthetic", expanded=False):
-            st.markdown("- 트렌디한 와이드 카라 XXHIT 셔츠토시 ... 스타일링하기 좋습니다.")
-            st.markdown("- 트렌드에 얽메이지 않는 유니크한 디자인 ... 유니크하게 연출할 수 있습니다.")
-            st.markdown("- 티셔츠 자체의 핏을 흐리지 않는 얇지않고 ... 결국 그러한 원단을 찾았습니다.")
+    #     else:
+    #         st.markdown("""
+    #         <div style="
+    #             text-align: center; 
+    #             padding: 50px; 
+    #             color: #6c757d;
+    #             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    #             border-radius: 15px;
+    #             border: 2px dashed #dee2e6;
+    #             margin: 20px 0;
+    #         ">
+    #             <div style="font-size: 48px; margin-bottom: 20px;">👈</div>
+    #             <div style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">
+    #                 Keyword를 클릭해보세요!
+    #             </div>
+    #             <div style="font-size: 14px;">
+    #                 왼쪽에서 원하는 키워드를 클릭하면<br>
+    #                 해당 키워드 관련 성공 사례를 볼 수 있습니다.
+    #             </div>
+    #         </div>
+    #         """, unsafe_allow_html=True)
+
 
 # 🔻 요소별 분석 탭 레이아웃
 element_tabs = st.tabs([info["name"] for info in element_analysis_info])
@@ -959,3 +1075,47 @@ for i, info in enumerate(element_analysis_info):
 
         elif chart_type == "radar":
             render_radar_chart()
+            # # 👉 버튼 클릭 후 성공 사례 표시
+            # if "selected_keyword" in st.session_state:
+            #     display_success_cases(st.session_state.selected_keyword, load_thumbnail_data())
+
+
+st.markdown("---")
+# 감성 vs 기능 도넛 차트 레이아웃 (plotly + 오른쪽 탭)
+def render_emotion_function_donut_chart():
+    st.markdown("## 전체 키워드 분석(미팅 후 수정 예정)")
+
+    left, right = st.columns([1.1, 1.9])
+
+    with left:
+        pastel_colors = ["#FFB3C6", "#B3D9FF"]
+
+        fig = px.pie(
+            names=labels,
+            values=sizes,
+            hole=0.4,
+            color_discrete_sequence=pastel_colors
+        )
+        fig.update_layout(
+            margin=dict(l=10, r=10, t=10, b=10),
+            height=300,
+            paper_bgcolor="white",
+            plot_bgcolor="white",
+            font_color="black",
+            legend=dict(font=dict(color="black"))
+        )
+        fig.update_traces(
+            textinfo='percent',
+            textfont_size=14,
+            textfont_color='black'
+        )
+        st.plotly_chart(fig, use_container_width=True)
+
+    with right:
+        tabs = st.tabs(["기능적 키워드", "감성적 키워드"])
+        with tabs[0]:
+            render_hover_box("기능적 키워드", functional_keywords)
+        with tabs[1]:
+            render_hover_box("감성적 키워드", emotional_keywords)
+
+render_emotion_function_donut_chart()
