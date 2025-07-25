@@ -535,7 +535,7 @@ def multicolor_func(*args, **kwargs):
 def render_wordcloud(title: str, keyword_freq: dict, problem_example_sentences: list):
     # 워드클라우드 객체 생성
     wc = WordCloud(
-        font_path="/usr/share/fonts/truetype/nanum/NanumGothic.ttf",  # 폰트 경로 시스템에 따라 조정
+        font_path = get_font_path(),
         background_color="white",  # 배경색
         width=400,
         color_func=multicolor_func,
