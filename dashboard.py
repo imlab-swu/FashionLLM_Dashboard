@@ -17,6 +17,32 @@ import plotly.graph_objects as go
 from sklearn.feature_extraction.text import CountVectorizer
 import matplotlib.font_manager as fm
 import streamlit.components.v1 as components
+import os
+
+
+# 폰트 경로를 찾는 함수
+def get_font_path():
+    # 프로젝트 내 폰트 경로 먼저 확인
+    project_font_path = os.path.join(os.path.dirname(__file__), 'fonts', 'NotoSansKR.ttf')
+    if os.path.exists(project_font_path):
+        return project_font_path
+    
+    # 시스템 폰트 경로들 확인
+    font_paths = [
+        "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
+        "/usr/share/fonts/truetype/nanum/NanumBarunGothic.ttf",
+        "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/truetype/noto/NotoSansKR-Regular.ttf",
+        "/System/Library/Fonts/Helvetica.ttc",  # macOS
+        "C:/Windows/Fonts/malgun.ttf",  # Windows
+    ]
+    
+    for path in font_paths:
+        if os.path.exists(path):
+            return path
+    
+    # 한글 폰트를 찾지 못한 경우 None 반환 (기본 폰트 사용)
+    return None
 
 
 # 한글 폰트 설정
@@ -43,7 +69,6 @@ except:
     # 폰트 설정 실패 시 기본 설정 유지
     plt.rcParams['font.family'] = 'sans-serif'
     plt.rcParams['font.sans-serif'] = ['Noto Sans CJK KR', 'NanumGothic', 'Malgun Gothic', 'DejaVu Sans']
-
 
 # 사이드바 입력 영역 추가
 st.sidebar.header("Crowdfunding Fashion Storytelling Dashboard")
@@ -544,7 +569,7 @@ def render_wordcloud(title: str, keyword_freq: dict, problem_example_sentences: 
 @st.cache_data
 def load_thumbnail_data():
     try:
-        with open('/home/sunghoon/bh/fashionllm/code/thumbnail/thumbnail.json', 'r', encoding='utf-8') as f:
+        with open('./resource/thumbnail/thumbnail.json', 'r', encoding='utf-8') as f:
             return json.load(f)
     except:
         # 기본 데이터 반환
