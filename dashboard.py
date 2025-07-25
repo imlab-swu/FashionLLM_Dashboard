@@ -810,7 +810,7 @@ def render_treemap():
                         if 0 <= point_number < len(df):
                             clicked_keyword = df.iloc[point_number]['keyword']
                             
-                            # 키워드 update
+                            # 키워드 업데이트
                             if clicked_keyword and clicked_keyword != " ":
                                 st.session_state.selected_keyword = clicked_keyword
                                 st.success(f"✅ '{clicked_keyword}' 선택됨")
