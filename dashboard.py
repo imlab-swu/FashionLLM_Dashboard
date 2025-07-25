@@ -17,32 +17,6 @@ import plotly.graph_objects as go
 from sklearn.feature_extraction.text import CountVectorizer
 import matplotlib.font_manager as fm
 import streamlit.components.v1 as components
-import os
-
-
-# 폰트 경로를 찾는 함수
-def get_font_path():
-    # 프로젝트 내 폰트 경로 먼저 확인
-    project_font_path = os.path.join(os.path.dirname(__file__), 'fonts', 'NotoSansKR.ttf')
-    if os.path.exists(project_font_path):
-        return project_font_path
-    
-    # 시스템 폰트 경로들 확인
-    font_paths = [
-        "/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
-        "/usr/share/fonts/truetype/nanum/NanumBarunGothic.ttf",
-        "/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc",
-        "/usr/share/fonts/truetype/noto/NotoSansKR-Regular.ttf",
-        "/System/Library/Fonts/Helvetica.ttc",  # macOS
-        "C:/Windows/Fonts/malgun.ttf",  # Windows
-    ]
-    
-    for path in font_paths:
-        if os.path.exists(path):
-            return path
-    
-    # 한글 폰트를 찾지 못한 경우 None 반환 (기본 폰트 사용)
-    return None
 
 
 # 한글 폰트 설정
@@ -70,65 +44,19 @@ except:
     plt.rcParams['font.family'] = 'sans-serif'
     plt.rcParams['font.sans-serif'] = ['Noto Sans CJK KR', 'NanumGothic', 'Malgun Gothic', 'DejaVu Sans']
 
+
 # 사이드바 입력 영역 추가
 st.sidebar.header("Crowdfunding Fashion Storytelling Dashboard")
-category = st.sidebar.selectbox("Category", ["Top", "Jacket", "Jumper", "Padding", "Vest", "Cardigan", "Zip-up", "Coat", "Blouse", "T-shirt", "Knitwear", "Shirt", "Bra top", "Hoodie", "Jeans", "Pants", "Skirt", "Leggings", "Jogger pants", "Dress", "Jumpsuit", "한복"])
+item = st.sidebar.selectbox("Item", ["Top", "Jacket", "Jumper", "Padding", "Vest", "Cardigan", "Zip-up", "Coat", "Blouse", "T-shirt", "Knitwear", "Shirt", "Bra top", "Hoodie", "Jeans", "Pants", "Skirt", "Leggings", "Jogger pants", "Dress", "Jumpsuit", "한복"])
+season = st.sidebar.selectbox("Season", ["All", "Summer", "Winter", "Spring", "Autumn"])
+gender = st.sidebar.selectbox("Gender", ["Female", "Male", "Unisex"])
+keyword_input = st.sidebar.text_input("Keyword (자유롭게 키워드 입력받고 싶을 때)", placeholder="예: 트렌디, 편안함 등")
 
-
-season_trend = st.sidebar.selectbox("Season", ["All", "Summer", "Winter", "Spring", "Autumn"])
-
-
-# 가격대 선택 라디오 버튼 (1개의 열로만 표시)
-price_options = [
-    "전체",
-    "5만원 이하",
-    "5만원 ~ 10만원",
-    "10만원 ~ 20만원",
-    "20만원 ~ 30만원",
-    "30만원 이상",
-    "직접 입력"
-]
-
-price_range_option = st.sidebar.radio(
-    "Price Range",
-    price_options,
-    index=0,
-    key="price_radio"
-)
-
-# 직접 입력 선택 시 범위 입력
-if price_range_option == "직접 입력":
-    st.sidebar.markdown("**직접 가격 범위 입력 (단위: 원)**")
-    col_min, spacer, col_max = st.sidebar.columns([1, 0.1, 1])
-    with col_min:
-        custom_min = st.sidebar.text_input("시작 가격", value="10000", key="custom_min")
-    with spacer:
-        st.sidebar.markdown("<div style='text-align:center; font-size:20px; padding-top: 30px;'>~</div>", unsafe_allow_html=True)
-    with col_max:
-        custom_max = st.sidebar.text_input("끝 가격", value="500000", key="custom_max")
-    try:
-        price_min = int(custom_min.replace(",", ""))
-        price_max = int(custom_max.replace(",", ""))
-    except ValueError:
-        st.sidebar.error("숫자를 올바르게 입력해주세요.")
-        price_min, price_max = 10000, 500000
-    price_range = (price_min, price_max)
-else:
-    # 각 구간별 실제 범위 할당
-    if price_range_option == "전체":
-        price_range = (10000, 500000)
-    elif price_range_option == "5만원 이하":
-        price_range = (10000, 50000)
-    elif price_range_option == "5만원 ~ 10만원":
-        price_range = (50000, 100000)
-    elif price_range_option == "10만원 ~ 20만원":
-        price_range = (100000, 200000)
-    elif price_range_option == "20만원 ~ 30만원":
-        price_range = (200000, 300000)
-    elif price_range_option == "30만원 이상":
-        price_range = (300000, 5000000)
-    else: # 예외 처리
-        price_range = (10000, 500000)
+# 키워드 리스트 정의
+emotional_keywords = ["트렌디", "편안함", "고급스러움", "러블리", "유니크", "시크", "캐주얼", "페미닌"]
+functional_keywords = ["보온성", "통기성", "신축성", "경량성", "흡습속건", "방수", "내구성"]
+all_keywords = emotional_keywords + functional_keywords
+selected_keywords = st.sidebar.multiselect("Keyword (준비된 키워드 중 선택하게 하고 싶을 때)", all_keywords)
 
 def get_element_order(df):
     element_orders = df.groupby("campaign_id")["element"].apply(list)
@@ -351,46 +279,11 @@ def render_hover_box(title, keywords_dict):
     html += "</div><div id='tooltip'></div>"
     components.html(html, height=300, scrolling=False)
 
-# # 🔷 대시보드 출력
-# st.markdown("## 💭 감성 vs 기능적 키워드 분석")
-
-# # 🔸 레이아웃: 도넛 차트 + 키워드 hover 탭
-# col1, col2 = st.columns([1, 2])
-
-# with col1:
-#     st.markdown("### 🧁 감성 vs 기능 도넛 차트")
-#     fig, ax = plt.subplots(figsize=(4, 4))
-#     wedges, texts, autotexts = ax.pie(
-#         sizes, labels=labels, colors=colors,
-#         autopct='%1.1f%%', startangle=90, counterclock=False,
-#         wedgeprops=dict(width=0.6)
-#     )
-#     ax.axis('equal')
-#     # ✅ 범례 추가
-#     ax.legend(
-#         wedges,
-#         labels,
-#         title="범례",
-#         loc="center left",
-#         bbox_to_anchor=(1, 0, 0.5, 1),
-#         labelcolor="black",
-#         facecolor="white",
-#         edgecolor="gray"
-#     )
-#     st.pyplot(fig)
-
-# with col2:
-#     tabs = st.tabs(["⚙️ 기능적 키워드", "💖 감성적 키워드"])
-#     with tabs[0]:
-#         render_hover_box("기능적 키워드", functional_keywords)
-#     with tabs[1]:
-#         render_hover_box("감성적 키워드", emotional_keywords)
-
 st.markdown("---")
 
 # 감성 vs 기능 도넛 차트 레이아웃 (plotly + 오른쪽 탭)
 def render_emotion_function_donut_chart():
-    st.markdown("## 전체 키워드 분석")
+    st.markdown("## 전체 키워드 분석(미팅 후 수정 예정)")
 
     left, right = st.columns([1.1, 1.9])
 
@@ -454,32 +347,6 @@ problem_keywords = {
     "활용도" : 20
 }
 
-
-# 솔루션 제시 키워드와 빈도
-# solution_keywords = {
-#     "간편함": 60,
-#     "효율성": 55,
-#     "혁신적 방법": 50,
-#     "빠른 해결": 48,
-#     "사용자 친화적": 45,
-#     "접근 용이성": 43,
-#     "자동화": 40,
-#     "모바일 최적화": 38,
-#     "UI/UX 개선": 36,
-#     "시간 절약": 35,
-#     "저비용 솔루션": 33,
-#     "직관적 인터페이스": 31,
-#     "원클릭 기능": 28,
-#     "데이터 기반": 26,
-#     "맞춤형 제공": 24,
-#     "설치 간편": 22,
-#     "고객 중심 설계": 20,
-#     "문제 자동 진단": 18,
-#     "학습 필요 없음": 15,
-#     "실시간 피드백": 12
-# }
-
-
 element_example_sentences = {
     # 파이차트용 요소 (세부 분류 O)
     "브랜드 소개": {
@@ -509,8 +376,8 @@ element_example_sentences = {
         ],
         "수상 경력": [
             "국제 섬유 디자인 대회인 IFDA 2022에서 본 제품의 원단 배색과 패턴 디자인이 심사위원 만장일치로 우수상을 수상했습니다.",
-            "소비자가 뽑은 브랜드 대상 2년 연속 수상’은 저희 제품을 직접 경험하신 수많은 고객분들의 평가 덕분이었습니다.",
-            "저희 브랜드는 2023 K패션 어워즈에서 ‘올해의 혁신 디자인’ 부문을 수상하며 제품력과 디자인 모두를 인정받았습니다."
+            "소비자가 뽑은 브랜드 대상 2년 연속 수상'은 저희 제품을 직접 경험하신 수많은 고객분들의 평가 덕분이었습니다.",
+            "저희 브랜드는 2023 K패션 어워즈에서 '올해의 혁신 디자인' 부문을 수상하며 제품력과 디자인 모두를 인정받았습니다."
         ]
     },
 
@@ -580,54 +447,6 @@ element_analysis_info = [
     {"name": "자주 묻는 질문", "method": "세부 요소 추출", "examples": ["배송일정", "세탁방법", "교환/반품"], "chart_type": "pie"}
 ]
 
-# # 1. 도넛형 파이차트 + 병합형 테이블 (브랜드 소개, 외부 평가 등)
-# def render_pie_chart(title, labels):
-#     st.markdown(f"### 🔸 {title}")
-#     left, right = st.columns([1.1, 1.9])
-
-#     with left:
-#         values = [random.randint(10, 30) for _ in labels]
-
-#         neon_theme_colors = [
-#             "#FF6EC7", "#72F0FF", "#C586FF", "#E68CFF", "#8AD6FF", "#C9A8FF"
-#         ]
-#         color_seq = neon_theme_colors[:len(labels)]
-
-#         fig = px.pie(
-#             names=labels,
-#             values=values,
-#             hole=0.4,
-#             color_discrete_sequence=color_seq
-#         )
-#         fig.update_layout(
-#             margin=dict(l=10, r=10, t=10, b=10),
-#             height=300,
-#             paper_bgcolor="#0D0C2B",
-#             plot_bgcolor="#0D0C2B",
-#             font_color="white",
-#             legend=dict(font=dict(color="white"))
-#         )
-#         fig.update_traces(
-#             textinfo='percent',
-#             textfont_size=14,
-#             textfont_color='white'
-#         )
-#         st.plotly_chart(fig, use_container_width=True)
-
-#     # 오른쪽: element_example_sentences에서 문장 출력
-#     with right:
-#         st.markdown("### 💬 세부 요소별 문장 예시")
-
-#         example_data = element_example_sentences.get(title, {})
-
-#         if isinstance(example_data, dict):
-#             for sub_elem, sentences in example_data.items():
-#                 with st.expander(f"📌 {sub_elem}"):
-#                     for s in sentences:
-#                         st.markdown(f"- {s}")
-#         else:
-#             st.info("예시 문장이 없습니다.")
-
 def render_pie_chart(title, labels):
     st.markdown(f"### {title}")
     left, right = st.columns([1.1, 1.9])
@@ -690,40 +509,15 @@ def multicolor_func(*args, **kwargs):
 # ✅ 함수 정의
 def render_wordcloud(title: str, keyword_freq: dict, problem_example_sentences: list):
     # 워드클라우드 객체 생성
-    font_path = get_font_path()
-    
-    try:
-        if font_path:
-            wc = WordCloud(
-                font_path=font_path,
-                background_color="white",
-                width=400,
-                color_func=multicolor_func,
-                height=300,
-                max_font_size=40,
-                min_font_size=10
-            ).generate_from_frequencies(keyword_freq)
-        else:
-            # 폰트 경로 없이 기본 설정으로 생성
-            wc = WordCloud(
-                background_color="white",
-                width=400,
-                color_func=multicolor_func,
-                height=300,
-                max_font_size=40,
-                min_font_size=10
-            ).generate_from_frequencies(keyword_freq)
-    except Exception as e:
-        # 폰트 로드 실패 시 기본 설정으로 재시도
-        st.warning(f"폰트 로드 중 오류 발생: {str(e)[:100]}... 기본 폰트를 사용합니다.")
-        wc = WordCloud(
-            background_color="white",
-            width=400,
-            color_func=multicolor_func,
-            height=300,
-            max_font_size=40,
-            min_font_size=10
-        ).generate_from_frequencies(keyword_freq)
+    wc = WordCloud(
+        font_path="/usr/share/fonts/truetype/nanum/NanumGothic.ttf",  # 폰트 경로 시스템에 따라 조정
+        background_color="white",  # 배경색
+        width=400,
+        color_func=multicolor_func,
+        height=300,
+        max_font_size=40,
+        min_font_size=10
+    ).generate_from_frequencies(keyword_freq)
 
     # 워드클라우드 시각화
     fig, ax = plt.subplots(figsize=(4, 3))
@@ -746,94 +540,75 @@ def render_wordcloud(title: str, keyword_freq: dict, problem_example_sentences: 
         for sentence in problem_example_sentences:
             st.markdown(f"- {sentence}")
 
+# 썸네일 데이터 로딩 함수 추가
+@st.cache_data
+def load_thumbnail_data():
+    try:
+        with open('/home/sunghoon/bh/fashionllm/code/thumbnail/thumbnail.json', 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except:
+        # 기본 데이터 반환
+        return [
+            {
+                "url": "https://www.wadiz.kr/web/campaign/detail/362523?_refer_section_st=PREORDER_3",
+                "project_name": "3만원대ㅣ6억메이커의 팔뚝 얇아보이는 여름가디건! 냉감소재&워셔블",
+                "approach": "658%",
+                "project_thumbnail_url": "https://cdn3.wadiz.kr/studio/images/2025/06/27/3e41a96e-fca4-489b-ade3-e486174c5768.jpeg/wadiz/resize/800/format/jpg/quality/85/"
+            },
+            {
+                "url": "https://www.wadiz.kr/web/campaign/detail/356858?_refer_section_st=PREORDER_8",
+                "project_name": "[7억 | 소매치기 방지] 신박한 도포 재킷, 일상도 여행도 완벽히",
+                "approach": "1,142%",
+                "project_thumbnail_url": "https://cdn3.wadiz.kr/studio/images/2025/05/16/8bce2f7e-320c-4259-b989-262e15dd3fc3.jpeg/wadiz/resize/800/format/jpg/quality/85/"
+            },
+            {
+                "url": "https://www.wadiz.kr/web/campaign/detail/343743?_refer_section_st=PREORDER_29",
+                "project_name": "[빠른배송] 실크같은 부드러움, 한여름까지 쾌적하게 2기장 5사이즈",
+                "approach": "18,225%",
+                "project_thumbnail_url": "https://cdn3.wadiz.kr/studio/images/2025/03/05/123356de-6992-4733-891f-e790ba679213.jpeg/wadiz/resize/800/format/jpg/quality/85/"
+            }
+        ]
 
-# def render_treemap():
-#     df = pd.DataFrame({
-#         "category": ["style", "style", "fit", "fit", "material", "material", "color", "color"],
-#         "keyword": ["캐주얼", "페미닌", "루즈", "슬림", "면", "폴리", "블랙", "크림"],
-#         "count": [30, 20, 15, 25, 35, 18, 28, 22]
-#     })
-
-#     # 📘 컬러맵: 은은한 블루 민트 계열
-#     fig = px.treemap(
-#         df,
-#         path=['category', 'keyword'],
-#         values='count',
-#         color='count',
-#         color_continuous_scale=[
-#             "#A9BCD0", "#778DA9", "#415A77", "#1B263B"
-#         ],
-#     )
-
-#     # 🌙 어두운 배경 및 폰트 컬러 조정
-#     fig.update_layout(
-#         paper_bgcolor="#0D1B2A",   # 전체 배경
-#         plot_bgcolor="#0D1B2A",
-#         font=dict(color="#E0E1DD"),
-#         margin=dict(t=25, l=0, r=0, b=0)
-#     )
-
-#     st.plotly_chart(fig, use_container_width=True)
-
-# def render_treemap():
-#     df = pd.DataFrame({
-#         "category": [
-#             "핏(fit)", "핏(fit)", "핏(fit)", "핏(fit)",
-#             "색상(hue)", "색상(hue)", "색상(hue)",
-#             "원단 종류(material)", "원단 종류(material)", "원단 종류(material)",
-#             "스타일(style)", "스타일(style)", "스타일(style)"
-#         ],
-#         "type": [
-#             "팬츠(pants)", "스커트(dress)", "아우터(top)", "아우터(top)",
-#             "B계열", "RP계열", "R계열",
-#             "천연 소재", "합성 소재", "재생소재",
-#             "모던(modern)", "페미닌(feminine)", "스포티(sporty)"
-#         ],
-#         "keyword": [
-#             "레귤러", "A라인", "타이트", "오버사이즈",
-#             "블루", "라벤더", "레드",
-#             "코튼", "폴리에스터", "레이온",
-#             "미니멀", "로맨틱", "캐주얼"
-#         ],
-#         "count": [
-#             35, 25, 15, 20,
-#             30, 18, 15,
-#             28, 22, 10,
-#             18, 21, 27
-#         ]
-#     })
-
-#     fig = px.treemap(
-#         df,
-#         path=['category', 'type', 'keyword'],
-#         values='count',
-#         color='count',
-#         color_continuous_scale=[
-#             "#FF6EC7",  # 네온 핑크
-#             "#C586FF",  # 연보라
-#             "#72F0FF",  # 네온 블루
-#             "#E68CFF",  # 연보라핑크
-#             "#8AD6FF",  # 민트블루
-#             "#B388EB",  # 라이트 퍼플
-#             "#FCD3DE",  # 밝은 핑크
-#             "#D5AAFF",  # 연한 라벤더
-#         ]
-#     )
-
-#     fig.update_layout(
-#         paper_bgcolor="white",   # 전체 배경색
-#         plot_bgcolor="white",    # 내부 배경색
-#         font=dict(color="black"),  # 흰색 폰트
-#         margin=dict(t=25, l=0, r=0, b=0)
-#     )
-
-#     # ⬅️ 노드 테두리 선 색도 흰 테마에 맞게 명시
-#     fig.update_traces(
-#         marker=dict(line=dict(color='white', width=1))
-#     )
-
-#     st.plotly_chart(fig, use_container_width=True)
-
+# 성공 사례 카드 표시 함수
+def display_success_cases(keyword, thumbnail_data):
+    st.markdown(f"### 🎯 '{keyword}' 관련 성공 사례")
+    
+    # 세로로 배치 (1열 3행)
+    for i, case in enumerate(thumbnail_data[:3]):
+        # Streamlit 기본 컨테이너 사용
+        with st.container():
+            # 배경색을 위한 간단한 스타일
+            st.markdown("""
+            <div style="
+                background-color: #f8f9fa;
+                padding: 20px;
+                border-radius: 15px;
+                border: 1px solid #ddd;
+                margin: 10px 0;
+            ">
+            """, unsafe_allow_html=True)
+            
+            # 이미지와 텍스트를 컬럼으로 나누기
+            col_img, col_text = st.columns([1, 3])
+            
+            with col_img:
+                try:
+                    st.image(case['project_thumbnail_url'], width=120)
+                except:
+                    st.image("https://via.placeholder.com/120x80?text=No+Image", width=120)
+            
+            with col_text:
+                # 성공률
+                st.markdown(f"**🎯 성공률: {case['approach']}**")
+                
+                # 프로젝트명
+                st.markdown(f"📝 {case['project_name']}")
+                
+                # 링크 버튼
+                st.link_button("캠페인 보기", case['url'])
+            
+            st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown("")  # 간격
 
 def render_treemap():
     st.markdown("""
@@ -846,141 +621,229 @@ def render_treemap():
     }
     </style>
     """, unsafe_allow_html=True)
-    df = pd.DataFrame({
-        "category": [
-            "핏(fit)", "핏(fit)", "핏(fit)", "핏(fit)",
-            "색상(hue)", "색상(hue)", "색상(hue)",
-            "원단 종류(material)", "원단 종류(material)", "원단 종류(material)",
-            "스타일(style)", "스타일(style)", "스타일(style)"
-        ],
-        "type": [
-            "베스트(vest)","티셔츠(tee)", "셔츠(shirt)", "셔츠(shirt)",
-            "B계열", "RP계열", "R계열",
-            "천연 소재", "합성 소재", "재생소재",
-            "모던(modern)", "페미닌(feminine)", "스포티(sporty)"
-        ],
-        "keyword": [
-            "레귤러","레귤러", "타이트", "오버사이즈",
-            "블루", "라벤더", "레드",
-            "코튼", "폴리에스터", "레이온",
-            "미니멀", "로맨틱", "캐주얼"
-        ],
-        "count": [
-            35, 25, 15, 20,
-            30, 18, 15,
-            28, 22, 10,
-            18, 21, 27
+    
+    # 썸네일 데이터 로드
+    thumbnail_data = load_thumbnail_data()
+    
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        df = pd.DataFrame({
+            "category": [
+                "핏(fit)", "핏(fit)", "핏(fit)", "핏(fit)",
+                # "색상(hue)", "색상(hue)", "색상(hue)",
+                "원단 종류(material)", "원단 종류(material)", "원단 종류(material)",
+                "스타일(style)", "스타일(style)", "스타일(style)"
+            ],
+            "type": [
+                "베스트(vest)","티셔츠(tee)", "셔츠(shirt)", "셔츠(shirt)",
+                # "B계열", "RP계열", "R계열",
+                "천연 소재", "합성 소재", "재생소재",
+                "모던(modern)", "페미닌(feminine)", "스포티(sporty)"
+            ],
+            "keyword": [
+                "레귤러","레귤러", "타이트", "오버사이즈",
+                # "블루", "라벤더", "레드",
+                "코튼", "폴리에스터", "레이온",
+                "미니멀", "로맨틱", "캐주얼"
+            ],
+            "count": [
+                35, 25, 15, 20,
+                # 30, 18, 15,
+                28, 22, 10,
+                18, 21, 27
+            ]
+        })
+        df["root"] = " "
+        
+        # 호버 시 표시할 추가 정보
+        df["percentage"] = (df["count"] / df["count"].sum() * 100).round(1)
+        df["description"] = [
+            "편안한 일상 착용감", "우아한 실루엣", "몸에 맞는 핏", "여유로운 착용감",
+            # "시원하고 차분한 느낌", "로맨틱하고 부드러운 색감", "열정적이고 강렬한 인상",
+            "자연스럽고 친환경적", "내구성이 뛰어남", "지속가능한 소재",
+            "깔끔하고 세련된 스타일", "우아하고 여성스러운 분위기", "활동적이고 편안한 룩"
         ]
-    })
-    df["root"] = " "
-    
-    # 호버 시 표시할 추가 정보
-    df["percentage"] = (df["count"] / df["count"].sum() * 100).round(1)
-    df["description"] = [
-        "편안한 일상 착용감", "우아한 실루엣", "몸에 맞는 핏", "여유로운 착용감",
-        "시원하고 차분한 느낌", "로맨틱하고 부드러운 색감", "열정적이고 강렬한 인상",
-        "자연스럽고 친환경적", "내구성이 뛰어남", "지속가능한 소재",
-        "깔끔하고 세련된 스타일", "우아하고 여성스러운 분위기", "활동적이고 편안한 룩"
-    ]
-    
-    # 각 키워드별 예시 문장 추가
-    df["example_sentence"] = [
-        "몸에 무리가 없는 레귤러 핏으로 편안한 착용감을 제공합니다.",
-        "여성스러운 A라인 실루엣으로 우아한 분위기를 연출해요.",
-        "슬림한 타이트 핏으로 몸매가 돋보이는 스타일링이 가능합니다.",
-        "넉넉한 오버사이즈로 트렌디하고 편안한 룩을 완성할 수 있어요.",
-        "차분하고 시원한 블루 컬러로 깔끔한 코디가 가능합니다.",
-        "로맨틱한 라벤더 색상으로 부드러운 매력을 표현해보세요.",
-        "강렬한 레드 컬러로 포인트를 주어 시선을 사로잡습니다.",
-        "100% 순면 코튼으로 부드럽고 통기성이 뛰어납니다.",
-        "폴리에스터 소재로 내구성이 좋고 관리가 간편해요.",
-        "부드러운 레이온 소재로 실키한 터치감이 특징입니다.",
-        "미니멀한 디자인으로 어떤 스타일링에도 잘 어울려요.",
-        "로맨틱한 디테일로 여성스러운 무드를 완성합니다.",
-        "캐주얼한 스타일로 데일리 룩에 완벽한 아이템이에요."
-    ]
+        
+        # 각 키워드별 예시 문장 추가
+        df["example_sentence"] = [
+            "몸에 무리가 없는 레귤러 핏으로 편안한 착용감을 제공합니다.",
+            "여성스러운 A라인 실루엣으로 우아한 분위기를 연출해요.",
+            "슬림한 타이트 핏으로 몸매가 돋보이는 스타일링이 가능합니다.",
+            "넉넉한 오버사이즈로 트렌디하고 편안한 룩을 완성할 수 있어요.",
+            # "차분하고 시원한 블루 컬러로 깔끔한 코디가 가능합니다.",
+            # "로맨틱한 라벤더 색상으로 부드러운 매력을 표현해보세요.",
+            # "강렬한 레드 컬러로 포인트를 주어 시선을 사로잡습니다.",
+            "100% 순면 코튼으로 부드럽고 통기성이 뛰어납니다.",
+            "폴리에스터 소재로 내구성이 좋고 관리가 간편해요.",
+            "부드러운 레이온 소재로 실키한 터치감이 특징입니다.",
+            "미니멀한 디자인으로 어떤 스타일링에도 잘 어울려요.",
+            "로맨틱한 디테일로 여성스러운 무드를 완성합니다.",
+            "캐주얼한 스타일로 데일리 룩에 완벽한 아이템이에요."
+        ]
 
-    fig = px.treemap(
-        df,
-        path=['root','category', 'type', 'keyword'],
-        values='count',
-        color='count',
-        color_continuous_scale=[
-            "#FFF0F5", "#FFD1DC", "#FFECB3",
-            "#D1F2EB", "#D6EAF8", "#E8DAEF",
-            "#FADBD8", "#FDEDEC"
-        ],
-        template="plotly_white",
-        # 호버 시 표시할 추가 데이터
-        custom_data=['percentage', 'description', 'example_sentence']
-    )   
+        fig = px.treemap(
+            df,
+            path=['root','category', 'type', 'keyword'],
+            values='count',
+            color='count',
+            color_continuous_scale=[
+                "#FFF0F5", "#FFD1DC", "#FFECB3",
+                "#D1F2EB", "#D6EAF8", "#E8DAEF",
+                "#FADBD8", "#FDEDEC"
+            ],
+            template="plotly_white",
+            # 호버 시 표시할 추가 데이터
+            custom_data=['percentage', 'description', 'example_sentence']
+        )   
 
-    fig.update_traces(
-        root_color="white",
-        marker=dict(
-            colorscale=None,
-            line=dict(color="white", width=2)  # 기본 테두리는 얇은 회색
-        ),
-        selector=dict(type='treemap'),
-        # 호버 템플릿 커스터마이징 (예시 문장만 표시)
-        hovertemplate="""<b>%{label}</b><br>- 예시 문장: %{customdata[2]}<extra></extra>"""
-    )
-
-    # 호버 박스 스타일 조정
-    fig.update_layout(
-        margin=dict(t=0, l=0, r=0, b=0),
-        paper_bgcolor="white",
-        plot_bgcolor="white",
-        font=dict(color="black"),
-        treemapcolorway=[
-            "#FFFFFF",  # 루트용 흰색
-            "#FFD1DC",  # 파스텔 핑크
-            "#AEC6CF",  # 파스텔 블루
-            "#FFFACD",  # 파스텔 옐로우
-            "#BFD8B8",  # 파스텔 민트
-            "#E0BBE4",  # 라일락
-            "#FFB347",  # 피치 오렌지
-            "#B2EBF2",  # 밝은 아쿠아
-            "#F5CBA7"   # 크림 베이지
-        ],
-        hoverlabel=dict(
-            bgcolor="rgba(255,255,255,0.9)",
-            bordercolor="gray",
-            font_size=12,
-            font_family="Arial",
-            align="left"
+        fig.update_traces(
+            root_color="white",
+            marker=dict(
+                colorscale=None,
+                line=dict(color="white", width=2)
+            ),
+            selector=dict(type='treemap'),
+            # 호버 템플릿 커스터마이징 (예시 문장만 표시)
+            hovertemplate="""<b>%{label}</b><br>- 예시 문장: %{customdata[2]}<br><b>클릭하여 성공 사례 보기</b><extra></extra>"""
         )
-    )
-    
-    # CSS를 추가하여 hover 시 테두리 효과 적용
-    st.markdown("""
-    <style>
-    .js-plotly-plot .plotly .treemap-trace path:hover {
-        stroke: white !important;
-        stroke-width: 4px !important;
-    }
-    </style>
-    """, unsafe_allow_html=True)
 
-    st.plotly_chart(fig, use_container_width=True, theme=None)
+        # 호버 박스 스타일 조정
+        fig.update_layout(
+            margin=dict(t=0, l=0, r=0, b=0),
+            paper_bgcolor="white",
+            plot_bgcolor="white",
+            font=dict(color="black"),
+            treemapcolorway=[
+                "#FFFFFF",  # 루트용 흰색
+                "#FFD1DC",  # 파스텔 핑크
+                "#AEC6CF",  # 파스텔 블루
+                "#FFFACD",  # 파스텔 옐로우
+                "#BFD8B8",  # 파스텔 민트
+                "#E0BBE4",  # 라일락
+                "#FFB347",  # 피치 오렌지
+                "#B2EBF2",  # 밝은 아쿠아
+                "#F5CBA7"   # 크림 베이지
+            ],
+            hoverlabel=dict(
+                bgcolor="rgba(255,255,255,0.9)",
+                bordercolor="gray",
+                font_size=12,
+                font_family="Arial",
+                align="left"
+            )
+        )
+        
+        # CSS를 추가하여 hover 시 테두리 효과 적용
+        st.markdown("""
+        <style>
+        .js-plotly-plot .plotly .treemap-trace path:hover {
+            stroke: white !important;
+            stroke-width: 4px !important;
+        }
+        </style>
+        """, unsafe_allow_html=True)
 
+        # streamlit-plotly-events를 사용한 클릭 이벤트 처리
+        try:
+            from streamlit_plotly_events import plotly_events
+            
+            # 이전 클릭 상태 확인을 위한 session state 초기화
+            if 'last_clicked_point' not in st.session_state:
+                st.session_state.last_clicked_point = None
+            
+            # plotly_events로 클릭 감지
+            selected_points = plotly_events(
+                fig,
+                click_event=True,
+                hover_event=False,
+                select_event=False,
+                key="treemap_events"
+            )
+            
+            # 클릭된 포인트가 있고, 이전 클릭과 다를 때만 처리
+            if selected_points and len(selected_points) > 0:
+                clicked_data = selected_points[0]
+                current_point = f"{clicked_data.get('curveNumber', '')}-{clicked_data.get('pointNumber', '')}"
+                
+                # 새로운 클릭인지 확인
+                if st.session_state.last_clicked_point != current_point:
+                    st.session_state.last_clicked_point = current_point
+                    
+                    # pointNumber를 통해 키워드 추출
+                    if 'pointNumber' in clicked_data:
+                        point_number = clicked_data['pointNumber']
+                        if 0 <= point_number < len(df):
+                            clicked_keyword = df.iloc[point_number]['keyword']
+                            
+                            # 키워드 업데이트
+                            if clicked_keyword and clicked_keyword != " ":
+                                st.session_state.selected_keyword = clicked_keyword
+                                st.success(f"✅ '{clicked_keyword}' 선택됨")
+                        
+        except ImportError:
+            st.error("streamlit-plotly-events가 설치되지 않았습니다.")
+            st.plotly_chart(fig, use_container_width=True, theme=None)
+        except Exception as e:
+            st.info(f"클릭 기능에 문제가 있습니다: {str(e)}")
+            st.plotly_chart(fig, use_container_width=True, theme=None)
 
-# def render_radar_chart():
-#     categories = ['Functional', 'Expressive', 'Aesthetic']
-#     values = [random.randint(20, 40) for _ in categories]
-#     fig = go.Figure()
-#     fig.add_trace(go.Scatterpolar(
-#         r=values + [values[0]],
-#         theta=categories + [categories[0]],
-#         fill='toself',
-#         line_color="#72F0FF"
-#     ))
-#     fig.update_layout(
-#         polar=dict(bgcolor="white"),
-#         showlegend=False,
-#         height=350
-#     )
-#     st.plotly_chart(fig, use_container_width=True)
+    with col2:
+        if 'selected_keyword' in st.session_state and st.session_state.selected_keyword:
+            st.markdown(f"### 🎯 '{st.session_state.selected_keyword}' 관련 성공 사례")
+
+            for case in thumbnail_data[:3]:
+                st.markdown(f"""
+                    <div style="
+                        background-color: white;
+                        border: 1px solid #ddd;
+                        border-radius: 12px;
+                        padding: 15px;
+                        margin-bottom: 15px;
+                        display: flex;
+                        align-items: center;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                    ">
+                        <img src="{case['project_thumbnail_url']}" width="100" style="border-radius: 8px; margin-right: 15px;">
+                        <div style="flex: 1;">
+                            <p style="margin: 0; font-size: 14px;"><strong>🎯 성공률:</strong> {case['approach']}</p>
+                            <p style="margin: 4px 0 10px 0; font-size: 15px;">📝 {case['project_name']}</p>
+                            <a href="{case['url']}" target="_blank" style="
+                                background-color: #4099ff;
+                                color: white;
+                                padding: 6px 12px;
+                                border-radius: 6px;
+                                text-decoration: none;
+                                font-size: 14px;
+                            ">캠페인 보기</a>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+
+            st.markdown("</div>", unsafe_allow_html=True)
+
+        else:
+            st.markdown("""
+            <div style="
+                text-align: center; 
+                padding: 50px; 
+                color: #6c757d;
+                background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                border-radius: 15px;
+                border: 2px dashed #dee2e6;
+                margin: 20px 0;
+            ">
+                <div style="font-size: 48px; margin-bottom: 20px;">👈</div>
+                <div style="font-size: 18px; font-weight: bold; margin-bottom: 10px;">
+                    treemap을 클릭해보세요!
+                </div>
+                <div style="font-size: 14px;">
+                    왼쪽 treemap에서 키워드를 클릭하면<br>
+                    해당 키워드 관련 성공 사례를 볼 수 있습니다.
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
 
 def render_radar_chart():
     st.markdown("### 제품 전달 가치")
@@ -1043,47 +906,6 @@ def render_radar_chart():
             st.markdown("- 트렌드에 얽메이지 않는 유니크한 디자인 ... 유니크하게 연출할 수 있습니다.")
             st.markdown("- 티셔츠 자체의 핏을 흐리지 않는 얇지않고 ... 결국 그러한 원단을 찾았습니다.")
 
-# 출력
-# for info in element_analysis_info:
-#     with st.expander(f"🔸 {info['name']}"):
-#         if info["chart_type"] == "pie":
-#             render_pie_chart(info['name'], info['examples'])
-#         elif info["chart_type"] == "wordcloud":
-#             example_sentences = element_example_sentences.get(info["name"], [])
-
-#             if info["name"] == "솔루션 제시":
-#                 render_wordcloud(info["name"], solution_keywords, example_sentences)
-#             else:
-#                 keyword_freq = {kw: random.randint(10, 30) for kw in info["examples"]}
-#                 render_wordcloud(info["name"], keyword_freq, example_sentences)
-#         elif info["chart_type"] == "treemap":
-#             render_treemap()
-#         elif info["chart_type"] == "radar":
-#             render_radar_chart()
-
-# with st.container():
-#     st.markdown("""
-#     <div style='
-#         border: 2px solid #e0e0e0;
-#         border-radius: 10px;
-#         padding: 20px;
-#         background-color: #fafafa;
-#         margin-bottom: 20px;
-#     '>
-#         <h3 style='margin-top: 0;'>대표적인 요소 구성 순서</h3>
-#         <div style='font-size:18px; line-height:2.2'>
-#             <b>문제 제기</b> →
-#             <b>솔루션 제시</b> →
-#             <b>제품 전달 가치</b> →
-#             <b>제품 상세 설명</b> →
-#             <b>브랜드 소개</b> →
-#             <b>제품 및 브랜드 외부 평가</b> →
-#             <b>펀딩 참여 유도</b> →
-#             <b>자주 묻는 질문</b>
-#         </div>
-#     </div>
-#     """, unsafe_allow_html=True)
-
 # 🔻 요소별 분석 탭 레이아웃
 element_tabs = st.tabs([info["name"] for info in element_analysis_info])
 
@@ -1112,52 +934,3 @@ for i, info in enumerate(element_analysis_info):
 
         elif chart_type == "radar":
             render_radar_chart()
-
-# st.markdown("""
-# <style>
-# /* 전체 배경색 및 텍스트 색상 */
-# body, .stApp {
-#     background-color: #0D0C2B !important;
-#     color: white !important;
-# }
-
-# /* 박스 스타일 */
-# .custom-box {
-#     border: 1px solid #444;
-#     border-radius: 10px;
-#     padding: 20px;
-#     background-color: #111111;
-#     margin-bottom: 20px;
-#     color: white;
-# }
-# .custom-box h4 {
-#     margin-top: 0;
-#     font-size: 18px;
-#     font-weight: 600;
-#     color: #72F0FF;
-# }
-
-# /* 표(table) 스타일 */
-# table {
-#     border-collapse: collapse;
-#     width: 100%;
-# }
-# th, td {
-#     border: 1px solid #555;
-#     padding: 6px 10px;
-#     text-align: left;
-#     font-size: 14px;
-#     color: white;
-# }
-            
-
-# /* ✅ 컬럼 헤더만 네온 하늘색 */
-# th {
-#     background-color: white;
-#     color: #72F0FF;
-# }
-
-# }
-# </style>
-# """, unsafe_allow_html=True)
-
